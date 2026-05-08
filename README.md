@@ -39,7 +39,7 @@ testing-app/
 ## Quick Setup
 
 ### Requirements
-- Node.js 16+
+- Node.js 20.19.4+
 - Expo CLI (`npm install -g expo-cli`)
 - iOS 13+ / Android 5.1+ (to run on devices)
 
