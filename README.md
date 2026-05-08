@@ -30,7 +30,7 @@ testing-app/
 ├── android/             # Native Android code
 ├── ios/                 # Native iOS code
 ├── assets/              # Resources (images, fonts)
-├── maestro/             # Maestro E2E UI tests
+├── .maestro/            # Maestro E2E UI tests
 │   └── flows/           # Test flow definitions
 ├── specs/               # Feature specifications
 │   └── 001-ui-flow-test-generation/  # Main feature
