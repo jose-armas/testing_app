@@ -1,0 +1,109 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://testing-app/specs/001-ui-flow-test-generation/contracts/flow-schema.json",
+  "title": "Flow Intermediate Representation",
+  "type": "object",
+  "required": [
+    "version",
+    "flowId",
+    "metadata",
+    "preconditions",
+    "steps",
+    "expectedOutcomes"
+  ],
+  "properties": {
+    "version": {
+      "type": "string",
+      "pattern": "^v[0-9]+$"
+    },
+    "flowId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "sourceSessionId": {
+      "type": "string"
+    },
+    "metadata": {
+      "type": "object",
+      "required": ["name", "platform"],
+      "properties": {
+        "name": { "type": "string" },
+        "platform": { "type": "string", "enum": ["ios", "android"] },
+        "appId": { "type": "string" },
+        "tags": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      },
+      "additionalProperties": true
+    },
+    "preconditions": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/checkpoint"
+      }
+    },
+    "steps": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/step"
+      }
+    },
+    "expectedOutcomes": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/checkpoint"
+      }
+    },
+    "generationWarnings": {
+      "type": "array",
+      "items": { "type": "string" }
+    }
+  },
+  "$defs": {
+    "selector": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "text": { "type": "string" },
+        "role": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "step": {
+      "type": "object",
+      "required": ["sequence", "action", "selector"],
+      "properties": {
+        "sequence": { "type": "integer", "minimum": 1 },
+        "action": {
+          "type": "string",
+          "enum": ["tap", "inputText", "scroll", "back", "assertVisible", "assertNotVisible"]
+        },
+        "selector": {
+          "$ref": "#/$defs/selector"
+        },
+        "value": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "checkpoint": {
+      "type": "object",
+      "required": ["kind", "selector"],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": ["visible", "notVisible", "stateReset"]
+        },
+        "selector": {
+          "$ref": "#/$defs/selector"
+        },
+        "description": { "type": "string" }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

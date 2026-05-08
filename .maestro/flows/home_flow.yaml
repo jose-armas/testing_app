@@ -1,0 +1,17 @@
+appId: com.aljj.testingapp
+name: Critical - increment counter
+tags:
+  - e2e
+  - critical
+---
+- launchApp
+
+# Preconditions
+- assertVisible: '10'
+- assertVisible: 'Press me'
+
+# Steps
+- tapOn: 'Press me'
+
+# Expected outcomes
+- assertVisible: '11'
