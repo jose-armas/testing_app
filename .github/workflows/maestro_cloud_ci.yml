@@ -23,14 +23,14 @@ jobs:
           distribution: temurin
 
       - name: Give execute permission
-        run: chmod +x ./android/gradlew
+        run: chmod +x ./testing-app/android/gradlew
 
       - name: Build APK
-        run: ./android/gradlew assembleDebug
+        run: ./testing-app/android/gradlew assembleDebug
 
       - name: Run Maestro Cloud
         uses: mobile-dev-inc/action-maestro-cloud@v2.0.2
         with:
           api-key: ${{ secrets.MAESTRO_API_KEY }}
           project-id: ${{ secrets.MAESTRO_PROJECT_ID }}
-          app-file: android/app/build/outputs/apk/debug/app-debug.apk
+          app-file: testing-app/android/app/build/outputs/apk/debug/app-debug.apk
