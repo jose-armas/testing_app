@@ -21,6 +21,11 @@ jobs:
       - name: Verify installation
         run: maestro --version
 
+      - name: Build APK (release)
+        run: |
+          cd testing_app/android
+          ./gradlew assembleRelease
+
       - name: Run Maestro Cloud tests
         env:
           MAESTRO_API_KEY: ${{ secrets.MAESTRO_API_KEY }}
