@@ -23,17 +23,30 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
-          cache: gradle
+
+      - name: Locate Android project
+        id: locate
+        run: |
+          if [ -f android/gradlew ]; then
+            echo "project_dir=." >> "$GITHUB_OUTPUT"
+            echo "apk_path=android/app/build/outputs/apk/release/app-release.apk" >> "$GITHUB_OUTPUT"
+          elif [ -f testing-app/android/gradlew ]; then
+            echo "project_dir=testing-app" >> "$GITHUB_OUTPUT"
+            echo "apk_path=testing-app/android/app/build/outputs/apk/release/app-release.apk" >> "$GITHUB_OUTPUT"
+          else
+            echo "No se encontro android/gradlew ni testing-app/android/gradlew"
+            exit 1
+          fi
 
       - name: Ensure Gradle wrapper is executable
-        run: chmod +x android/gradlew
+        run: chmod +x ${{ steps.locate.outputs.project_dir }}/android/gradlew
 
       - name: Build Android release APK
-        run: ./android/gradlew assembleRelease
+        run: ${{ steps.locate.outputs.project_dir }}/android/gradlew assembleRelease
 
       - name: Run Maestro tests on Maestro Cloud
         uses: mobile-dev-inc/action-maestro-cloud@v2
         with:
           api-key: ${{ secrets.MAESTRO_API_KEY }}
           project-id: ${{ secrets.MAESTRO_PROJECT_ID }}
-          app-file: android/app/build/outputs/apk/release/app-release.apk
+          app-file: ${{ steps.locate.outputs.apk_path }}
