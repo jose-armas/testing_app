@@ -1,16 +1,29 @@
-- uses: actions/checkout@v3
+name: Maestro Cloud Tests
 
-- uses: actions/setup-java@v3
-  with:
-    java-version: 17
-    distribution: temurin
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
 
-- run: npm install
+jobs:
+  maestro-tests:
+    runs-on: ubuntu-latest
 
-- run: cd android && ./gradlew assembleRelease
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
 
-- uses: mobile-dev-inc/action-maestro-cloud@v2.0.2
-  with:
-    api-key: ${{ secrets.MAESTRO_API_KEY }}
-    project-id: ${{ secrets.MAESTRO_PROJECT_ID }}
-    app-file: android/app/build/outputs/apk/release/app-release.apk
+      - name: Install Maestro CLI
+        run: |
+          curl -Ls "https://get.maestro.mobile.dev" | bash
+          echo "$HOME/.maestro/bin" >> $GITHUB_PATH
+
+      - name: Verify installation
+        run: maestro --version
+
+      - name: Run Maestro Cloud tests
+        env:
+          MAESTRO_API_KEY: ${{ secrets.MAESTRO_API_KEY }}
+          MAESTRO_PROJECT_ID: ${{ secrets.MAESTRO_PROJECT_ID }}
+        run: |
+          maestro cloud --device-os "android-34" --api-key $MAESTRO_API_KEY --project-id $MAESTRO_PROJECT_ID --app-file android/app/build/outputs/apk/release/app-release.apk --flows .maestro/flows
