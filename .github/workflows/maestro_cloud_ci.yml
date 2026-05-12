@@ -1,6 +1,22 @@
-- name: Run Maestro Cloud
-- uses: mobile-dev-inc/action-maestro-cloud@v2.0.2
-  with:
-    api-key: ${{ secrets.MAESTRO_API_KEY }}
-    project-id: ${{ secrets.MAESTRO_PROJECT_ID }}
-    app-file: app/build/outputs/apk/debug/app-debug.apk
+name: Maestro Cloud CI
+
+on:
+  workflow_dispatch:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  maestro-cloud:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Run Maestro tests
+        uses: mobile-dev-inc/action-maestro-cloud@v1
+        with:
+          api-key: ${{ secrets.MAESTRO_API_KEY }}
+          project-id: ${{ secrets.MAESTRO_PROJECT_ID }}
