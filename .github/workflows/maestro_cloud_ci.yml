@@ -31,13 +31,24 @@ jobs:
         run: npm install -g expo eas-cli
 
       - name: Prebuild Android
-        run: npx expo prebuild
+        run: npx expo prebuild --platform android --non-interactive
 
-      - name: Build APK
+      # 🔥 IMPORTANT: bundle JS so debug APK doesn't depend on Metro
+      - name: Bundle React Native JS (DEBUG FIX)
+        run: |
+          mkdir -p android/app/src/main/assets
+          npx react-native bundle \
+            --platform android \
+            --dev false \
+            --entry-file node_modules/expo/AppEntry.js \
+            --bundle-output android/app/src/main/assets/index.android.bundle \
+            --assets-dest android/app/src/main/res
+
+      - name: Build Debug APK
         run: |
           cd android
           chmod +x gradlew
-          ./gradlew assembleDebug
+          ./gradlew assembleDebug -x lint -x test --parallel
     
       - name: Verify APK
         run: find . -name "*.apk"
