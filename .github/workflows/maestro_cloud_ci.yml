@@ -11,6 +11,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # ======================
+      # CHECKOUT
+      # ======================
       - name: Checkout repository
         uses: actions/checkout@v4
 
@@ -25,6 +28,12 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+
+      # ======================
+      # FIX CLI (IMPORTANT)
+      # ======================
+      - name: Install React Native CLI dependency
+        run: npm install -D @react-native-community/cli
 
       # ======================
       # JAVA
@@ -43,13 +52,28 @@ jobs:
         run: npx expo prebuild --platform android --non-interactive
 
       # ======================
-      # ENSURE ASSETS FOLDER EXISTS
+      # GRADLE PERMISSIONS
       # ======================
-      - name: Create assets folder
-        run: mkdir -p android/app/src/main/assets
+      - name: Make Gradlew executable
+        run: chmod +x android/gradlew
 
       # ======================
-      # MANUAL BUNDLE (CRITICAL STEP)
+      # CREATE ASSETS FOLDER
+      # ======================
+      - name: Create Android assets folder
+        run: mkdir -p android/app/src/main/assets/
+
+      # ======================
+      # CREATE EMPTY BUNDLE FILE
+      # ======================
+      - name: Create bundle file
+        run: |
+          cd android/app/src/main/assets/
+          touch index.android.bundle
+          cd ../../../..
+
+      # ======================
+      # BUNDLE JS (FIXED)
       # ======================
       - name: Bundle React Native JS
         run: |
@@ -61,18 +85,10 @@ jobs:
             --assets-dest android/app/src/main/res
 
       # ======================
-      # GRADLE PERMISSIONS
+      # CLEAN OLD BUILD
       # ======================
-      - name: Make Gradlew executable
-        run: chmod +x android/gradlew
-
-      # ======================
-      # CLEAN BUILD
-      # ======================
-      - name: Clean Android build
-        run: |
-          cd android
-          ./gradlew clean
+      - name: Remove existing build
+        run: rm -rf android/app/build
 
       # ======================
       # BUILD DEBUG APK
@@ -80,7 +96,8 @@ jobs:
       - name: Build Debug APK
         run: |
           cd android
-          ./gradlew assembleDebug --stacktrace
+          ./gradlew clean assembleDebug --stacktrace
+          cd ..
 
       # ======================
       # VERIFY APK
@@ -89,7 +106,7 @@ jobs:
         run: find android/app/build/outputs/apk -name "*.apk"
 
       # ======================
-      # MAESTRO CLOUD
+      # MAESTRO CLOUD TESTS
       # ======================
       - name: Run Maestro Cloud tests
         uses: mobile-dev-inc/action-maestro-cloud@v3.0.0
