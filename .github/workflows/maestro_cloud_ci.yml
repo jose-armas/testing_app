@@ -33,6 +33,9 @@ jobs:
       - name: Prebuild Android
         run: npx expo prebuild --platform android --non-interactive
 
+      - name: Install React Native CLI dependency
+        run: npm install --save-dev @react-native-community/cli
+
       # 🔥 IMPORTANT: bundle JS so debug APK doesn't depend on Metro
       - name: Bundle React Native JS (DEBUG FIX)
         run: |
