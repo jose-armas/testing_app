@@ -1,1 +1,1 @@
-flows: flows/**/*.yaml
+flows: flows/*.yaml
