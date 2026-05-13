@@ -18,6 +18,6 @@ jobs:
           distribution: 'temurin'
       - uses: mobile-dev-inc/action-maestro-cloud@v3.0.0
         with:
-          api-key: ${{ secrets.MAESTRO_CLOUD_API_KEY }}
+          api-key: ${{ secrets.MAESTRO_API_KEY }}
           project-id: ${{ secrets.MAESTRO_PROJECT_ID }}
           app-binary-id: 46606b03aa861af4eff913fdc8b3b34ba647e47f
