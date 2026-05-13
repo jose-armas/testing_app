@@ -38,13 +38,14 @@ jobs:
         run: |
           cd android
           chmod +x gradlew
-          ./gradlew assembleDebug
+          ./gradlew assembleRelease
     
       - name: Verify APK
         run: find . -name "*.apk"
 
-      - uses: mobile-dev-inc/action-maestro-cloud@v3.0.0
+      - name: Run Maestro Cloud tests
+        uses: mobile-dev-inc/action-maestro-cloud@v3.0.0
         with:
           api-key: ${{ secrets.MAESTRO_API_KEY }}
           project-id: ${{ secrets.MAESTRO_PROJECT_ID }}
-          app-file: ./android/app/build/outputs/apk/debug/app-debug.apk
+          app-file: ./android/app/build/outputs/apk/release/app-release.apk
