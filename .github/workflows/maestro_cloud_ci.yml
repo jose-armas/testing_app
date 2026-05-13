@@ -8,8 +8,7 @@ on:
 jobs:
   maestro-cloud:
     runs-on: ubuntu-latest
-    outputs:
-      app: app/build/outputs/apk/debug
+  
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
