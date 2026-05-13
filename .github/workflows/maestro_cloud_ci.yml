@@ -20,4 +20,4 @@ jobs:
         with:
           api-key: ${{ secrets.MAESTRO_API_KEY }}
           project-id: ${{ secrets.MAESTRO_PROJECT_ID }}
-          app-binary-id: 46606b03aa861af4eff913fdc8b3b34ba647e47f
+          app-binary-id: db9e8c98f8cccb9f066739f63760bfe4e4332892
