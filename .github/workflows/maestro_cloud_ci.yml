@@ -33,8 +33,17 @@ jobs:
       - name: Prebuild Android
         run: npx expo prebuild --platform android --non-interactive
 
-      - name: Install React Native CLI dependency
-        run: npm install --save-dev @react-native-community/cli
+      - name: Bundle JavaScript and assets
+        run: 
+          npx react-native bundle \
+          --platform android \
+          --dev false \
+          --entry-file index.js \
+          --bundle-output android/app/src/main/assets/index.android.bundle \
+          --assets-dest android/app/src/main/res
+
+      - name: MKDIr
+        run: mkdir -p android/app/src/main/assets
 
       - name: Build Debug APK
         run: |
