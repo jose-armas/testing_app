@@ -23,8 +23,9 @@ jobs:
         run: npm install -g expo eas-cli
 
       - name: Build APK
-        run: npx expo export
-        run: npx expo run:android --variant release
+        run: | 
+          npx expo export 
+          npx expo run:android --variant release
     
 
       - name: Verify APK
