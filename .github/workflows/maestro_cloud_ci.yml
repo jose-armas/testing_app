@@ -1,5 +1,4 @@
-name: Build and run Maestro tests (Native Android)
-
+name: Build and run Maestro tests
 on:
   push:
     branches: [ main ]
