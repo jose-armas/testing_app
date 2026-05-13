@@ -12,6 +12,27 @@ jobs:
       app: app/build/outputs/apk/debug
     steps:
       - uses: actions/checkout@v3
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Install Expo CLI
+        run: npm install -g expo eas-cli
+
+      - name: Build APK
+        run: |
+          cd android
+          ./gradlew assembleDebug
+
+      - name: Verify APK
+        run: find . -name "*.apk"
+
+      - name: Prebuild Android
+        run: npx expo prebuild --platform android
+
       - uses: actions/setup-java@v3
         with:
           java-version: 17
