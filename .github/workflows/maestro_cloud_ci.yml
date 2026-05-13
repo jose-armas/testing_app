@@ -23,9 +23,9 @@ jobs:
         run: npm install -g expo eas-cli
 
       - name: Build APK
-        run: |
-          cd android
-          ./gradlew assembleDebug
+        run: npx expo export
+        run: npx expo run:android --variant release
+    
 
       - name: Verify APK
         run: find . -name "*.apk"
