@@ -1,9 +1,8 @@
 name: Build Release APK and run Maestro tests
 on:
-  push:
-    branches: [ main ]
   pull_request:
-    branches: [ main ]
+    branches:
+      - 'release/**'
 
 jobs:
   maestro-cloud:
