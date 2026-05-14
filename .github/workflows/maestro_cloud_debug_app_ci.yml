@@ -74,8 +74,7 @@ jobs:
           MAESTRO_CLOUD_PROJECT_ID: ${{ secrets.MAESTRO_CLOUD_PROJECT_ID }}
           GITHUB_PR_NUMBER: ${{ github.event.pull_request.number }}
           GITHUB_BRANCH: ${{ github.head_ref }}
-          GITHUB_BASE: ${{ github.base_ref }}
-          GITHUB_SHA: ${{ github.sha }}
+
         run: |
           maestro cloud \
             --device-os "android-34" \
@@ -84,4 +83,4 @@ jobs:
             --app-file ./android/app/build/outputs/apk/debug/app-debug.apk \
             --flows .maestro/flows/onboarding.yml \
             --branch "$GITHUB_BRANCH" \
-            --commit "$GITHUB_SHA"
+          
