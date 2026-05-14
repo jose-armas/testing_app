@@ -8,7 +8,7 @@ on:
 
 jobs:
   maestro-cloud:
-    - name: Build Debug APK and run Maestro tests
+    name: Build Debug APK and run Maestro tests
     runs-on: ubuntu-latest
 
     steps:
