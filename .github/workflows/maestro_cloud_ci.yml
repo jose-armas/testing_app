@@ -30,6 +30,9 @@ jobs:
           java-version: 17
           cache: gradle
 
+      - name: Install RN CLI
+        run: npm install --save-dev @react-native-community/cli
+
       # Generate native android project from Expo
       - name: Expo prebuild
         run: npx expo prebuild --platform android --non-interactive
