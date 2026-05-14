@@ -40,21 +40,9 @@ jobs:
       - name: Expo prebuild
         run: npx expo prebuild --platform android --non-interactive
 
-      # Create assets folder
-      - name: Create assets folder
-        run: mkdir -p android/app/src/main/assets
+      - name: Prebuild Android
+        run: npx expo prebuild --platform android --non-interactive
 
-      # Embed JS bundle inside APK
-      - name: Generate JS bundle
-        run: |
-          npx react-native bundle \
-            --platform android \
-            --dev false \
-            --entry-file node_modules/expo/AppEntry.js \
-            --bundle-output android/app/src/main/assets/index.android.bundle \
-            --assets-dest android/app/src/main/res
-
-      # Build debug APK
       - name: Build Debug APK
         run: |
           cd android
