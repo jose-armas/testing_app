@@ -30,17 +30,21 @@ jobs:
           java-version: 17
           cache: gradle
 
-      - name: Prebuild Android
-        run: CI=1 npx expo prebuild --platform android
+      # Generate native android project from Expo
+      - name: Expo prebuild
+        run: npx expo prebuild --platform android --non-interactive
 
-      - name: Make Gradlew executable
-        run: chmod +x android/gradlew
+      # IMPORTANT:
+      # Embed JS bundle inside APK
+      # This avoids Metro dependency in Maestro Cloud
+      - name: Embed JS bundle
+        run: npx expo export:embed --platform android
 
-      - name: Clean Android build
-        run: cd android && ./gradlew clean
-
+      # Build debug APK
       - name: Build Debug APK
-        run: cd android && ./gradlew assembleDebug --stacktrace
+        run: |
+          cd android
+          ./gradlew assembleDebug
 
       - name: Verify APK
         run: find android/app/build/outputs/apk -name "*.apk"
