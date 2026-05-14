@@ -72,15 +72,22 @@ jobs:
         env:
           MAESTRO_CLOUD_API_KEY: ${{ secrets.MAESTRO_API_KEY }}
           MAESTRO_CLOUD_PROJECT_ID: ${{ secrets.MAESTRO_PROJECT_ID }}
+
           GITHUB_PR_NUMBER: ${{ github.event.pull_request.number }}
           GITHUB_BRANCH: ${{ github.head_ref }}
+          GITHUB_SHA: ${{ github.sha }}
+          GITHUB_ACTOR: ${{ github.actor }}
 
         run: |
           maestro cloud \
-            --device-os "android-34" \
-            --api-key "$MAESTRO_CLOUD_API_KEY" \
-            --project-id "$MAESTRO_CLOUD_PROJECT_ID" \
-            --app-file ./android/app/build/outputs/apk/debug/app-debug.apk \
-            --flows .maestro/flows/*.yaml \
-            --branch "$GITHUB_BRANCH" \
+          --device-os android-34 \
+          --api-key "$MAESTRO_CLOUD_API_KEY" \
+          --project-id "$MAESTRO_CLOUD_PROJECT_ID" \
+          --app-file ./android/app/build/outputs/apk/debug/app-debug.apk \
+          --flows .maestro/flows \
+          --include-tags critical \
+          --name "Android Debug | PR #$GITHUB_PR_NUMBER | $GITHUB_BRANCH | $GITHUB_ACTOR" \
+          --branch "$GITHUB_BRANCH" \
+          --commit-sha "$GITHUB_SHA"
+          
           
