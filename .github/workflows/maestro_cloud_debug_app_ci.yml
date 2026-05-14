@@ -70,8 +70,8 @@ jobs:
           echo "$HOME/.maestro/bin" >> "$GITHUB_PATH"
       - name: Run Maestro Cloud Android Tests
         env:
-          MAESTRO_CLOUD_API_KEY: ${{ secrets.MAESTRO_CLOUD_API_KEY }}
-          MAESTRO_CLOUD_PROJECT_ID: ${{ secrets.MAESTRO_CLOUD_PROJECT_ID }}
+          MAESTRO_CLOUD_API_KEY: ${{ secrets.MAESTRO_API_KEY }}
+          MAESTRO_CLOUD_PROJECT_ID: ${{ secrets.MAESTRO_PROJECT_ID }}
           GITHUB_PR_NUMBER: ${{ github.event.pull_request.number }}
           GITHUB_BRANCH: ${{ github.head_ref }}
 
