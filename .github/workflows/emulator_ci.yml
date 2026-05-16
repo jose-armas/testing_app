@@ -36,20 +36,6 @@ jobs:
       - name: Prebuild Android
         run: npx expo prebuild --platform android --non-interactive
 
-      - name: Build APK
-        run: |
-          cd android
-          chmod +x gradlew
-          ./gradlew assembleRelease
-
-      - name: Verify APK
-        run: find . -name "*.apk"
-
-      - name: Export and Run Android
-        run: |
-          npx expo export
-          npx expo run:android --variant release
-
       - name: Instalar Android SDK y generar Emulador
         uses: ReactiveCircus/android-emulator-runner@v2
         with:
@@ -58,4 +44,15 @@ jobs:
           arch: arm64-v8a # Cambiado a ARM64 para que funcione en el nuevo macOS
           profile: Nexus 6
           script: ./gradlew connectedCheck
+
+
+      - name: Export and Run Android
+        run: |
+          npx expo export
+          npx expo run:android --variant release
+
+      - name: Verify APK
+        run: find . -name "*.apk"
+
+      
 
