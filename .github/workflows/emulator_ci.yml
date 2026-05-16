@@ -9,7 +9,7 @@ on:
 jobs:
   test:
     name: Ejecutar pruebas instrumentadas
-    runs-on: macos-14 # Servidor actualizado a Apple Silicon (M1)
+    runs-on: ubuntu-latest # Cambiado a Linux (KVM compatible)
 
     steps:
       - name: Checkout del código
@@ -21,12 +21,18 @@ jobs:
           distribution: 'zulu'
           java-version: '17'
 
+      - name: Habilitar la aceleración de hardware reactiva (KVM)
+        run: |
+          echo "Habilitando KVM..."
+          sudo chown $USER /dev/kvm
+
       - name: Instalar Android SDK y generar Emulador
         uses: ReactiveCircus/android-emulator-runner@v2
         with:
-          api-level: 33
-          target: google_apis
-          arch: arm64-v8a # Cambiado a ARM64 para que funcione en el nuevo macOS
+          api-level: 31          # API 31 es la más rápida y estable en servidores Linux de GitHub
+          target: default
+          arch: x86_64           # Al usar Linux volvemos a x86_64, que es nativo para estas máquinas
           profile: Nexus 6
           script: ./gradlew connectedCheck
+
 
