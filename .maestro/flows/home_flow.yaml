@@ -1,8 +1,8 @@
 appId: com.aljj.testingapp
-name: Critical - increment counter
+name: Minor - increment counter
 tags:
   - e2e
-  - critical
+  - minor
 ---
 - launchApp
 
