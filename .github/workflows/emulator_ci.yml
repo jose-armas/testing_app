@@ -46,7 +46,7 @@ jobs:
           sudo udevadm trigger --name-match=kvm
 
       - name: Prebuild Android
-        run: npx expo prebuild --platform android --non-interactive
+        run: npx expo prebuild --platform android --non-interactive                                             
 
       - name: Dar permisos a Gradle Wrapper
         run: chmod +x android/gradlew
@@ -86,14 +86,14 @@ jobs:
           disable-animations: true
           force-avd-creation: false
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          working-directory: android
           script: |
-            cd android
             ./gradlew --no-daemon connectedCheck
-            cd ..
-            npx expo run:android --variant release --no-bundler
+        env:
+          PATH: ${{ github.workspace }}/android:${{ env.PATH }}
+
+      - name: Run Expo on Android (no Metro)
+        run: npx expo run:android --variant release --no-bundler
 
       - name: Verify APK
         run: find . -name "*.apk"
-
-      
-
