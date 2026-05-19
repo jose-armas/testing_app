@@ -10,15 +10,13 @@ jobs:
   test:
     name: Ejecutar pruebas instrumentadas
     runs-on: ubuntu-latest
-    timeout-minutes: 45
     strategy:
-      fail-fast: false
       matrix:
-        api-level: [29, 33]
+        api-level: [21, 23, 29]
 
     steps:
       - name: Checkout del código
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Configurar Java
         uses: actions/setup-java@v4
@@ -31,7 +29,6 @@ jobs:
         with:
           node-version: 20
           cache: npm
-          cache-dependency-path: package-lock.json
           
       - name: Install dependencies
         run: npm ci
@@ -44,56 +41,45 @@ jobs:
           echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm
-
-      - name: Prebuild Android
-        run: npx expo prebuild --platform android --non-interactive                                             
-
-      - name: Dar permisos a Gradle Wrapper
-        run: chmod +x android/gradlew
-
       - name: Gradle cache
         uses: gradle/actions/setup-gradle@v5
 
       - name: AVD cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         id: avd-cache
         with:
           path: |
             ~/.android/avd/*
             ~/.android/adb*
-          key: avd-${{ matrix.api-level }}-x86_64-google_apis
+          key: avd-${{ matrix.api-level }}
 
       - name: create AVD and generate snapshot for caching
         if: steps.avd-cache.outputs.cache-hit != 'true'
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: ${{ matrix.api-level }}
-          target: google_apis
-          arch: x86_64
           force-avd-creation: false
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           disable-animations: false
           script: echo "Generated AVD snapshot for caching."    
     
 
+      - name: Prebuild Android
+        run: npx expo prebuild --platform android --non-interactive
+
       - name: Instalar Android SDK y generar Emulador
-        uses: reactivecircus/android-emulator-runner@v2
+        uses: ReactiveCircus/android-emulator-runner@v2
         with:
           api-level: ${{ matrix.api-level }}
           target: google_apis
-          arch: x86_64
           profile: Nexus 6
           disable-animations: true
-          force-avd-creation: false
-          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
-          working-directory: android
-          script: |
-            ./gradlew --no-daemon connectedCheck
-        env:
-          PATH: ${{ github.workspace }}/android:${{ env.PATH }}
-
-      - name: Run Expo on Android (no Metro)
-        run: npx expo run:android --variant release --no-bundler
+          force-avd-creation: true
+          working-directory: ./android
+          script: ./gradlew connectedCheck
+            cd ..
+            npx expo export
+            npx expo run:android --variant release
 
       - name: Verify APK
         run: find . -name "*.apk"
