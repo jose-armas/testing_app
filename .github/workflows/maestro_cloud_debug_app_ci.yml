@@ -1,0 +1,93 @@
+name: Build Debug APK and run Maestro tests
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  maestro-cloud:
+    name: Build Debug APK and run Maestro tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+          cache: gradle
+
+      - name: Install React Native CLI + Metro
+        run: |
+          npm install --save-dev \
+            @react-native-community/cli \
+            @react-native/metro-config
+
+      # Generate native android project from Expo
+      - name: Expo prebuild
+        run: npx expo prebuild --platform android --non-interactive
+
+      # Create assets folder
+      - name: Create assets folder
+        run: mkdir -p android/app/src/main/assets
+
+      # Embed JS bundle inside APK
+      - name: Generate JS bundle
+        run: |
+          npx react-native bundle \
+            --platform android \
+            --dev false \
+            --entry-file node_modules/expo/AppEntry.js \
+            --bundle-output android/app/src/main/assets/index.android.bundle \
+            --assets-dest android/app/src/main/res
+
+      # Build debug APK
+      - name: Build Debug APK
+        run: |
+          cd android
+          ./gradlew assembleDebug
+
+      - name: Verify APK
+        run: find android/app/build/outputs/apk -name "*.apk"
+
+      - name: Install Maestro CLI
+        run: |
+          curl -Ls "https://get.maestro.mobile.dev" | bash
+          echo "$HOME/.maestro/bin" >> "$GITHUB_PATH"
+      - name: Run Maestro Cloud Android Tests
+        env:
+          MAESTRO_CLOUD_API_KEY: ${{ secrets.MAESTRO_API_KEY }}
+          MAESTRO_CLOUD_PROJECT_ID: ${{ secrets.MAESTRO_PROJECT_ID }}
+
+          GITHUB_PR_NUMBER: ${{ github.event.pull_request.number }}
+          GITHUB_BRANCH: ${{ github.head_ref }}
+          GITHUB_SHA: ${{ github.sha }}
+          GITHUB_ACTOR: ${{ github.actor }}
+
+        run: |
+          maestro cloud \
+          --device-os android-34 \
+          --api-key "$MAESTRO_CLOUD_API_KEY" \
+          --project-id "$MAESTRO_CLOUD_PROJECT_ID" \
+          --app-file ./android/app/build/outputs/apk/debug/app-debug.apk \
+          --flows .maestro/flows \
+          --include-tags critical \
+          --name "Android Debug | PR #$GITHUB_PR_NUMBER | $GITHUB_BRANCH | $GITHUB_ACTOR" \
+          --branch "$GITHUB_BRANCH" \
+          --commit-sha "$GITHUB_SHA"
+          
+          
