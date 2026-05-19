@@ -67,19 +67,24 @@ jobs:
       - name: Prebuild Android
         run: npx expo prebuild --platform android --non-interactive
 
-      - name: Instalar Android SDK y generar Emulador
-        uses: ReactiveCircus/android-emulator-runner@v2
-        with:
-          api-level: ${{ matrix.api-level }}
-          target: google_apis
-          profile: Nexus 6
-          disable-animations: true
-          force-avd-creation: true
-          working-directory: ./android
-          script: ./gradlew connectedCheck
-            cd ..
-            npx expo export
-            npx expo run:android --variant release
+      - name: Start emulator
+        run: |
+          nohup $ANDROID_HOME/emulator/emulator \
+          -avd test \
+          -no-window \
+          -no-audio \
+          -no-boot-anim > emulator.log 2>&1 &
+
+          adb wait-for-device
+
+          until adb shell getprop sys.boot_completed | grep -m 1 '1'; do
+            sleep 5
+          done
+        
+      - name: Export and Run Android
+        run: |
+          npx expo export
+          npx expo run:android --variant release
 
       - name: Verify APK
         run: find . -name "*.apk"
